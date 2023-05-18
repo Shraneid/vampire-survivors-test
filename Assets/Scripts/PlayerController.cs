@@ -5,17 +5,16 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed;
-    new Rigidbody2D rigidbody2D;
+    Rigidbody2D playerRigidbody;
+
     [HideInInspector]
     public Vector2 movementDirection;
 
-    // Start is called before the first frame update
     void Start()
     {
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        playerRigidbody = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         InputManagement();
@@ -36,6 +35,6 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        rigidbody2D.velocity = movementDirection * moveSpeed;
+        playerRigidbody.velocity = movementDirection * moveSpeed;
     }
 }
