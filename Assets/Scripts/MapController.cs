@@ -8,23 +8,22 @@ using UnityEngine;
 
 public class MapController : MonoBehaviour
 {
-    const int CHUNK_SIZE = 32;
-
     public GameObject chunkToRender;
     public GameObject player;
+
+    public const int CHUNK_SIZE = 32;
+    public const int NUMBER_OF_CHUNKS_LOADED = 2;
     
     Dictionary<Vector2, GameObject> terrainChunksDict;
-    List<Vector2> visibleChunksPositions;
 
     void Start()
     {
         terrainChunksDict = new();
-        visibleChunksPositions = new();
 
-        SpawnOrShowVisibleChunks(player.transform.position);
+        InvokeRepeating("UpdateMap", 0, 1.0f);
     }
 
-    void Update()
+    void UpdateMap()
     {
         Vector2 currentPlayerChunkPos = new(
             Mathf.Round(player.transform.position.x / 32),
@@ -37,9 +36,9 @@ public class MapController : MonoBehaviour
 
     void SpawnOrShowVisibleChunks(Vector2 currentPlayerChunkPos)
     {
-        for (int i = (int)Mathf.Ceil(currentPlayerChunkPos.x) - 1; i <= (int)Mathf.Ceil(currentPlayerChunkPos.x) + 1; i++)
+        for (int i = (int)Mathf.Ceil(currentPlayerChunkPos.x) - NUMBER_OF_CHUNKS_LOADED; i <= (int)Mathf.Ceil(currentPlayerChunkPos.x) + NUMBER_OF_CHUNKS_LOADED; i++)
         {
-            for (int j = (int)Mathf.Ceil(currentPlayerChunkPos.y) - 1; j <= (int)Mathf.Ceil(currentPlayerChunkPos.y + 1); j++)
+            for (int j = (int)Mathf.Ceil(currentPlayerChunkPos.y) - NUMBER_OF_CHUNKS_LOADED; j <= (int)Mathf.Ceil(currentPlayerChunkPos.y + NUMBER_OF_CHUNKS_LOADED); j++)
             {
                 Vector2 chunkPos = new(i, j);
                 if (!terrainChunksDict.ContainsKey(chunkPos))
@@ -56,11 +55,8 @@ public class MapController : MonoBehaviour
 
     private void HideFarChunks(Vector2 currentPlayerChunkPos)
     {
-        List<Vector2> chunkPositionsToRemove = visibleChunksPositions.Where(chunkPosition =>
-               chunkPosition.x > currentPlayerChunkPos.x + 1
-            || chunkPosition.x < currentPlayerChunkPos.x - 1
-            || chunkPosition.y < currentPlayerChunkPos.y - 1
-            || chunkPosition.y < currentPlayerChunkPos.y - 1
+        List<Vector2> chunkPositionsToRemove = terrainChunksDict.Keys.Where(
+            chunkPosition => Vector2.Distance(currentPlayerChunkPos, chunkPosition) > Mathf.Pow(NUMBER_OF_CHUNKS_LOADED, 2)
         ).ToList();
 
         if (!chunkPositionsToRemove.Any()) return;
@@ -69,8 +65,6 @@ public class MapController : MonoBehaviour
         {
             terrainChunksDict[chunkPos].SetActive(false);
         }
-
-        visibleChunksPositions = terrainChunksDict.Values.ToList();
     }
 
     private void SpawnNewChunk(Vector2 chunkPos)
@@ -84,6 +78,5 @@ public class MapController : MonoBehaviour
         chunkGameObject.SetActive(true);
 
         terrainChunksDict.Add(chunkPos, chunkGameObject);
-        visibleChunksPositions.Add(chunkPos);
     }
 }
