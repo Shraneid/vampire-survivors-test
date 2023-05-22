@@ -9,10 +9,13 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector]
     public Vector2 movementDirection;
+    [HideInInspector]
+    public Vector2 weaponMovementDirection;
 
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
+        weaponMovementDirection = new Vector2(1, 0);
     }
 
     void Update()
@@ -31,6 +34,11 @@ public class PlayerController : MonoBehaviour
         float moveY = Input.GetAxisRaw("Vertical");
 
         movementDirection = new Vector2(moveX, moveY).normalized;
+
+        if (!movementDirection.Equals(Vector2.zero))
+        {
+            weaponMovementDirection = movementDirection;
+        }
     }
 
     void Move()

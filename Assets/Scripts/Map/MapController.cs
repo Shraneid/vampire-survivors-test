@@ -20,7 +20,7 @@ public class MapController : MonoBehaviour
     {
         terrainChunksDict = new();
 
-        InvokeRepeating("UpdateMap", 0, 1.0f);
+        InvokeRepeating(nameof(UpdateMap), 0, 1.0f);
     }
 
     void UpdateMap()
